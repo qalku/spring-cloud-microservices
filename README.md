@@ -1,5 +1,5 @@
 # spring-cloud-microservices
-Spring Cloud Application for Microservices:
+Spring Cloud Template for Microservices:
 
 - Service Discovery: Eureka
 - Proxy: Zuul API Gateway
