@@ -1,0 +1,105 @@
+.selectrec{ background: #333333; }
+.standardRekord{}
+.wybranyRekord{ background: #000000; }
+.przyciskKl{ border:1px solid #333333;background-color: #666666;color:white;padding:10px;margin:0px; font-size:14px; height:20px;text-align:center; }
+.przyciskUP{ border:1px solid #333333;background-color: #cccccc;color:black;padding:10px;margin:0px; font-size:11px; height:20px;text-align:center; }
+.blokRama{ border:1px solid #cccccc;padding:5px;margin:4px;border-radius:10px; }
+.naglowekBloku{ border:1px solid #cccccc;padding:5px;margin:4px;border-radius:10px;background-color: #cccccc; }
+
+.przycisk{ background-image:linear-gradient(to bottom, #50004a, #240221);padding:10px;margin:5px;border-radius:10px;height:60px;color:white;text-align:center;border:1px solid white; }
+.przyciskOn{ background-image:linear-gradient(to bottom, orange, #240221);margin:10px;border-radius:10px;height:60px;color:white;text-align:center;border:1px solid white;  }
+.x-grid-cell-inner { background-color: #50004a; font-size:11px; padding-top:7px;padding-bottom:7px;margin-top:3px;margin-bottom:3px;}
+.przyciskTools{ box-shadow: 5px 5px 20px black;border:1px solid white;color:white;border-radius:10px;padding:10px;margin:2px; font-size:11px; height:60px;text-align:center; }
+.przyciskToolsOff{ border:1px solid #666666;color:#666666;border-radius:10px;padding:10px;margin:2px; font-size:11px; height:60px;text-align:center; }
+.fnTytul{ color:white; padding:5px; }
+.fn{ color:greenyellow; padding:5px; }
+.fnPrzycisk{ color:cyan; border:1px solid cyan; padding:10px; border-radius:15px; text-align:center; }
+.fnPrzyciskOn{ color:cyan; border:1px solid cyan; padding:10px; border-radius:15px; text-align:center;background:lightblue;color:black; }
+.naglPar{ font-size:10px; }
+.indiOn{ border:1px solid cyan;color:cyan;font-size:10px;padding:4px;margin:1px;border-radius:5px; }
+.indiOff{ border:1px solid #666666;color:#666666;font-size:10px;padding:4px;margin:1px;border-radius:5px; }
+.indiRed{ border:1px solid white;color:white;font-size:10px;padding:4px;margin:1px;border-radius:5px;background:red; }
+.indiGreen{ border:1px solid black;color:black;font-size:10px;padding:4px;margin:1px;border-radius:5px;background:green; }
+
+.psc{ border:2px solid black;color:black;padding:10px;margin:5px;border-radius:15px;background:#ccccccc;text-align:center;font-size:28px;font-weight:bold; }
+
+.przyciskNumer{ box-shadow: 5px 5px 20px black;border:1px solid white;color:white;border-radius:10px;padding:10px;margin:2px; font-size:28px; height:50px;text-align:center; }
+.paragonRow{}
+.paragonRowOn{ background:lightblue; }
+.toolsRow{ border-bottom: 1px dashed #cccccc; }
+.toolsRowOn{ border-bottom: 1px dashed #cccccc; background:lightblue; }
+
+/**
+* KOLEJNY SWITCH
+*/
+input.cmn-toggle-round + label {
+  padding: 4px;
+  width: 100px;
+  height: 30px;
+  background-color: #dddddd;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  -o-border-radius: 30px;
+  border-radius: 30px;
+}
+input.cmn-toggle-round + label:before, input.cmn-toggle-round + label:after {
+  display: block;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  content: "";
+}
+input.cmn-toggle-round + label:before {
+  right: 2px;
+  background-color: #ff9966;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  -o-border-radius: 30px;
+  border-radius: 30px;
+  -webkit-transition: background 0.4s;
+  -moz-transition: background 0.4s;
+  -o-transition: background 0.4s;
+  transition: background 0.4s;
+}
+input.cmn-toggle-round + label:after {
+  width: 40px;
+  background-color: #fff;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -ms-border-radius: 100%;
+  -o-border-radius: 100%;
+  border-radius: 100%;
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  -webkit-transition: margin 0.4s;
+  -moz-transition: margin 0.4s;
+  -o-transition: margin 0.4s;
+  transition: margin 0.4s;
+}
+input.cmn-toggle-round:checked + label:before {
+  background-color: #8ce196;
+}
+input.cmn-toggle-round:checked + label:after {
+  margin-left: 60px;
+}
+
+.cmn-toggle {
+  position: absolute;
+  margin-left: -9999px;
+  visibility: hidden;
+}
+.cmn-toggle + label {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+

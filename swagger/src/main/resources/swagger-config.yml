@@ -1,0 +1,19 @@
+servers:
+  - url: https://api.example.com
+    description: Production server (uses live data)
+  - url: https://sandbox-api.example.com
+    description: Sandbox server (uses test data)
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    configUrl: ${server.servlet.contextPath}/v3/api-docs/swagger-config
+    url: ${server.servlet.contextPath}/v3/api-docs
+    urls:
+      - name: api-customer
+        url: /customer/v3/api-docs
+      - name: api-cart
+        url: /cart/v3/api-docs
+      - name: api-product
+        url: /product/v3/api-docs

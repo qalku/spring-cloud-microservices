@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Eureka Klient</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" href="/lib/jquery-ui-1.13.1.custom/jquery-ui.css">
+    <script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery-ui-1.13.1.custom/jquery-ui.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/lib/DataTables/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"/>
+    <script type="text/javascript" src="/lib/DataTables/datatables.min.js"></script>
+    <script type="text/javascript" src="/js/actuator.js"></script>
+
+    <style type="text/css" class="init">
+
+
+    td.details-control {
+        background: url('/images/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+    tr.details td.details-control {
+        background: url('/images/details_close.png') no-repeat center center;
+    }
+    td.highlight {
+        background-color: #ececec !important;
+    }
+    .contuctIn{
+        background-color: #ffffcc !important;
+    }
+    .contuctOut{
+        background-color: transparent !important;
+    }
+    .label {
+        display: inline-block;
+        width: 10em;
+        font-size:12px;
+    }
+
+    // JQUERY UI DIALOG
+    //label,
+    input { display:block; }
+    input.text { margin-bottom:12px; width:95%; padding: .4em; }
+    fieldset { padding:0; border:0; margin-top:25px; }
+    h1 { font-size: 1.2em; margin: .6em 0; }
+    div#users-contain { width: 350px; margin: 20px 0; }
+    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+    .ui-dialog .ui-state-error { padding: .3em; }
+    .validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+    // editor
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; background:black; }
+    .string { color: green; }
+    .number { color: darkorange; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: red; }
+
+
+    // DATATABLES: https://datatables.net/examples/
+    // UWAGA! PARSER DO SWAGGERA: https://github.com/swagger-api/swagger-parser
+    // ACTUTATOR:   https://codecouple.pl/2019/05/03/3-spring-boot-2-actuator/
+    // WAŻNE:       https://www.javappa.com/kurs-spring/spring-boot-actuator-2-x
+    //              https://learn.microsoft.com/pl-pl/azure/spring-apps/concept-manage-monitor-app-spring-boot-actuator
+    //              https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.enabling
+    //              https://lightrun.com/getting-started-with-spring-boot-actuator/
+	</style>
+
+</head>
+<body style="height:100%;font-family:Arial,Tahoma;">
+
+<div style="background:#333333;color:white;width:98%;padding:15px;border-radius:15px;margin:0px;">
+    <table width="100%">
+    <tr>
+        <td nowrap=""><a href="http://127.0.0.1:8761/" target="_blank" style="color:white;">Eureka</a></td>
+        <td><font color="white">|</font></td>
+        <td nowrap=""><a href="/swagger-ui/index.html" target="_blank" style="color:white;">Swagger API</a></td>
+        <td><font color="white">|</font></td>
+        <td nowrap=""><a href="/h2-ui" target="_blank" style="color:white;">Baza H2</a></td>
+        <td width="40%"></td>
+
+        <td nowrap=""><a href="http://127.0.0.1:8761/eureka/status" target="_blank" style="color:white;">Eureka Server</a></td>
+        <td><font color="white">|</font></td>
+        <td nowrap=""><a href="http://127.0.0.1:8761/eureka/apps" target="_blank" style="color:white;">Eureka Apps</a></td>
+
+
+        <td width="100" nowrap><font color="white">&nbsp;&nbsp;</font></td>
+        <td nowrap=""><a href="/server" target="_blank" style="color:white;">Load Server</a></td>
+        <td><font color="white">|</font></td>
+        <td nowrap=""><a href="/system" target="_blank" style="color:white;">Load Instance</a></td>
+        <td><font color="white">|</font></td>
+        <td nowrap=""><a href="/apps" target="_blank" style="color:white;">Lista Apps DB</a></td>
+    </tr>
+</table>
+</div>
+
+<div style="width:100%">
+    <div style="pading:5px;">
+        <h2><b>ZARZĄDZANIE MIKROSERWISAMI:</b></h2>
+        <hr>
+    </div>
+
+    <div style="border:1px solid #999999;border-radius:15px;top-margin:5px;padding:20px;padding-top:5px;">
+        <div style="width:100%;border:0px dashed #999999;">
+            <table width="100%"><tr><td width="100%"></td>
+                <td><div style="cursor:pointer;" onClick="getServer();"><img src="images/icons16x16/database_refresh.png"></div></td>
+                <td><div style="cursor:pointer;" onClick="dt.ajax.reload();"><img src="images/icons16x16/page_refresh.png"></div></td>
+            </tr></table></div>
+        <table width="100%">
+            <tr>
+                <td>HOST:</td>
+                <td><div id="hostName" style="font-weight:bold;"></div></td>
+                <td>IP:</td>
+                <td><div id="ipAddr" style="font-weight:bold;"></div></td>
+                <td>Instancja:</td>
+                <td><div id="instanceId" style="font-weight:bold;"></div></td>
+            </tr>
+            <tr>
+                <td>STATUS:</td>
+                <td><div id="status" style="font-weight:bold;"></div></td>
+                <td>PROCESORÓW:</td>
+                <td><div id="numofcpus" style="font-weight:bold;"></div></td>
+                <td>CountryId:</td>
+                <td><div id="countryId" style="font-weight:bold;"></div></td>
+            </tr>
+            <tr>
+                <td>Dostępna Pamięć:</td>
+                <td><div id="totalavailmemory" style="font-weight:bold;"></div></td>
+                <td>Użytej pamięci:</td>
+                <td><div id="currentmemoryusage" style="font-weight:bold;"></div></td>
+                <td>UP Time:</td>
+                <td><div id="serveruptime" style="font-weight:bold;"></div></td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <table id="example" class="display" style="width:100%;">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Nazwa</th>
+            <th>IP</th>
+            <th>Status</th>
+            <th>Port</th>
+            <th>Url</th>
+            <th>DB</th>
+            <th>API</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th></th>
+            <th>Nazwa</th>
+            <th>IP</th>
+            <th>Status</th>
+            <th>Port</th>
+            <th>Url</th>
+            <th>DB</th>
+            <th>API</th>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div style="padding-top:15px;">
+    <div style="border-radius:15px;padding:15px;margin:10px;background:#fcfcfc;"><b>AKTUALNY ROUTING NA GATEWAY'U:</b></div>
+    <div id="routes" style="border:1px solid #cccccc;border-radius:15px;padding:15px;margin:10px;"></div>
+</div>
+<br><br>
+<script>
+var dt;
+var old;
+var myHostName="";
+
+// Array to track the ids of the details displayed rows
+var detailRows = [];
+var rows = [];
+
+  $( function() {
+    $( document ).tooltip();
+  } );
+
+function format(d) {
+    if(d.databaseAddress==null){ d.databaseAddress='<font color=red>Brak Bazy Danych</font>';}
+    if(d.databaseUser==null){ d.databaseUser='<font color=red>-</font>';}
+    if(d.databaseType==null){ d.databaseType='<font color=red>-</font>';}
+
+    let linia ='<div style="border:1px solid #fcfcfc;border-radius-left-bottom:25px;border-radius-right-bottom:25px;padding:10px;background:#cccccc;"><div id="belka'+d.vipAddress+'" style="background:white;border-radius:10px;padding:5px;"></div><table width=100%>'
+        +'<tr><td>Created: </td><td><font size=1>'+d.created+'</font></td><td>VipAddress: </td><td>'+d.vipAddress+'</td><td>App: </td><td width=150><b>'+d.app+'</b></td></tr>'
+        +'<tr><td>Port: </td><td>'+d.port+'</td><td>SecurePort: </td><td>'+d.secureport+'</td><td>Instancja: </td><td><font size=1>'+d.instanceId+'</font></td></tr>'
+        +'<tr><td>DB Uri: </td><td>'+d.databaseAddress+'</td><td>DB User: </td><td>'+d.databaseUser+'</td><td>DB Typ: </td><td>'+d.databaseType+'</td></tr>'
+        +'</table></div>';
+        return (
+            linia
+        );
+}
+
+
+function syntaxHighlight(json) {
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+
+function output(inp) {
+    document.getElementById('showresults').innerHTML = inp;
+}
+
+function runAction(key,link){
+    $('#showresults').html("... ładowanie");
+    //alert(action+" | "+link);
+    var method='GET';
+
+    if(key=='beans'){ }
+    if(key=='caches-cache'){  }
+    if(key=='caches'){  }
+    if(key=='health-path'){  }
+    if(key=='health'){  }
+    if(key=='info'){ }
+    if(key=='conditions'){  }
+    if(key=='shutdown'){ method='POST';  }
+    if(key=='configprops'){  }
+    if(key=='configprops-prefix'){  }
+    if(key=='env'){  }
+    if(key=='env-toMatch'){  }
+    if(key=='integrationgraph'){  }
+    if(key=='loggers'){  }
+    if(key=='loggers-name'){  }
+    if(key=='heapdump'){  }
+    if(key=='metrics-name'){  }
+    if(key=='metrics'){  }
+    if(key=='scheduledtasks'){  }
+    if(key=='mappings'){  }
+    if(key=='refresh'){ method='POST';  }
+    if(key=='restart'){ method='POST';  }
+    if(key=='pause'){ method='POST';  }
+    if(key=='resume'){ method='POST';  }
+    if(key=='features'){  }
+    if(key=='serviceregistry'){  }
+
+    if(key=='trace'){  }
+    if(key=='threaddump'){  }
+    if(key=='logfile'){  }
+    if(key=='liquibase'){  }
+
+
+    if(key!='shutdown' && key!='restart' && key!='pause'){
+
+        $( function() {
+            $( "#dialog-funkcje" ).dialog({
+              title: 'Operacja >>'+key+'<<',
+              resizable: true,
+              height: 700,
+              width: 900,
+              modal: true,
+              buttons: {
+                "Info": function() {
+                  $( this ).dialog( "close" );
+                },
+                Cancel: function() {
+                  $( this ).dialog( "close" );
+                }
+              }
+            });
+        } );
+    }
+
+
+    var dataType="json"; //xml, json, script, text, html
+
+    $.ajax({
+      type: method,
+      url: link,
+      //data: data,
+      success: function(data, status){
+        setTimeout(function(){
+            //var result = $('<div />').append(data).find('#showresults').html();
+            //$('#showresults').html(result);
+            //alert(data);
+            if(key=='shutdown'){ afterShutdown(data);
+            }else if(key=='refresh'){ afterRefresh(data);
+            }else if(key=='restart'){ afterRestart(data);
+            }else if(key=='pause'){ afterPause(data);
+            }else if(key=='resume'){ afterResume(data);
+            }else{
+                var js=syntaxHighlight(data);
+                var str = JSON.stringify(data, null, "\t");
+
+                output(str);
+                output(syntaxHighlight(str));
+            }
+        },500);
+        //dt.ajax.reload();
+      },
+      dataType: dataType
+    })
+}
+
+
+function addInfo(id, myurl){
+    //myurl=myurl.toLowerCase();
+
+    document.getElementById("belka"+id).innerHTML="Łączenie... <a href='"+myurl+"actuator' target='_blank'>"+myurl+"actuator</a>";
+
+        $.ajax({
+        url: myurl+"actuator",
+        //type: "GET",
+        dataType: "json",
+        crossDomain: true,
+        success: function (data, status, jqXHR) {
+            document.getElementById("belka"+id).innerHTML="";
+
+              var items = [];
+              items.push( "<li id='a'>x</li>" );
+              $.each( data._links, function( key, val ) {
+                items.push( "<li id='" + key + "'>" + val + "</li>" );
+                if(key=='metrics-requiredMetricName'){ key='metrics-name'; }
+
+                if(key!='self'){
+                    var tooltipx = "";
+                    var infox = getTooltipInfo(key);
+
+                    tooltipx='title="'+infox+'"';
+
+                    document.getElementById("belka"+id).innerHTML=document.getElementById("belka"+id).innerHTML+"<div "+tooltipx+" onClick='runAction(\""+key+"\", \""+val.href+"\");' onMouseOver='this.className=\"contuctIn\";' onMouseOut='this.className=\"contuctOut\";' style='cursor: pointer;border:1px solid black;border-radius:10px;padding:5px;width:110px;display: inline-block;text-align:center;min-height:30px;font-size:10px;margin:3px;padding-top:8px;'><b>"+key+"</b><div id='btnContent"+key+"' style='padding-top:3px;'></div></div>";
+                    btnContent(key);
+                }
+              });
+
+              $( "<ul/>", {
+                "class": "my-new-list",
+                html: items.join( "" )
+              }).appendTo( "belka"+id );
+        },
+        error: function (responseData, textStatus, errorThrown) {
+            document.getElementById("belka"+id).innerHTML="<font color=red>Brak połączenia <a href='"+myurl+"actuator' target='_blank'>"+myurl+"actuator</a></font>";
+        },
+        complete: function (responseData, textStatus, errorThrown) {
+
+            //$('#showresults').slideDown('slow')
+        }
+    });
+
+}
+
+function getServer(){
+
+    $.ajax({
+        url: "/server",
+        //data: {
+        //    txtsearch: $('#appendedInputButton').val()
+        //},
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            myHostName=data.hostName;
+            document.getElementById("hostName").innerHTML=""+data.hostName;
+            document.getElementById("ipAddr").innerHTML=""+data.ipAddr;
+            document.getElementById("instanceId").innerHTML=""+data.instanceId;
+
+            var color="lightgreen";
+            if(data.status!='UP'){
+                color="red";
+            }
+
+            document.getElementById("status").innerHTML="<div style='border-radius: 10px;padding:5px;background:"+color+";text-align:center;'>"+data.status+"</div>";
+            document.getElementById("countryId").innerHTML=""+data.countryId;
+            document.getElementById("numofcpus").innerHTML=""+data.numofcpus;
+
+            document.getElementById("totalavailmemory").innerHTML=""+data.totalavailmemory;
+            document.getElementById("currentmemoryusage").innerHTML=""+data.currentmemoryusage;
+            document.getElementById("serveruptime").innerHTML=""+data.serveruptime;
+        },
+        error: function (xhr, status) {
+
+            document.getElementById("hostName").innerHTML=""+myHostName;
+            document.getElementById("ipAddr").innerHTML="???";
+            document.getElementById("instanceId").innerHTML="???";
+
+            var color="red";
+
+            document.getElementById("status").innerHTML="<div style='border-radius: 10px;padding:5px;background:"+color+";text-align:center;'>DOWN</div>";
+            document.getElementById("countryId").innerHTML="-";
+            document.getElementById("numofcpus").innerHTML="-";
+
+            document.getElementById("totalavailmemory").innerHTML="-";
+            document.getElementById("currentmemoryusage").innerHTML="-";
+            document.getElementById("serveruptime").innerHTML="0:00";
+        },
+        complete: function (xhr, status) {
+            //$('#showresults').slideDown('slow')
+        }
+    });
+}
+
+function petlaSerwer(){
+    setTimeout(function(){
+        getServer();
+        petlaSerwer();
+    },15000);
+}
+
+function getSystem(){
+    $.get("/system", function(data, status){
+    });
+}
+
+$(document).ready(function() {
+    getServer();
+    petlaSerwer();
+
+    $.get("/machines/gateway/routes", function(data, status){
+        document.getElementById("routes").innerHTML=""+data;
+    });
+
+    getSystem();
+
+    dt = $('#example').DataTable({
+        processing: true,
+        //serverSide: true,
+        language: {
+            url: '/lib/DataTables/pl.json'
+        },
+        ajax: '/apps',
+        initComplete: function () {
+            let api = this.api();
+            setInterval(function () {
+                api.ajax.reload();
+                detailRows.forEach(function(id, i) {
+                    row=rows[i];
+                    tr.addClass('details');
+                    row.child(format(row.data())).show();
+                    $('#' + id + ' td.details-control').trigger('click');
+                });
+            }, 90000);
+        },
+        columns: [
+            {
+                class: 'details-control',
+                orderable: false,
+                data: null,
+                defaultContent: '',
+            },
+            {
+                data: 'name',
+                render: function (data, type, row, meta) {
+                    return '<b>'+data+'</b>';
+                }
+            },
+            {
+                data: 'ipAddr',
+                render: function (data, type, row, meta) {
+                    return '<font size=2>'+data+'</font>';
+                }
+            },
+            {
+                data: 'status',
+                render: function (data, type, row, meta) {
+                    if(data=='UP'){
+                        return '<div style="background:green;color:white;border-radius:10px;text-align:center;padding:7px;">UP</div>';
+                    }else{
+                        return '<div style="background:red;color:white;border-radius:10px;text-align:center;padding:7px;">DOWN</div>';
+                    }
+                }
+            },
+            { data: 'port' },
+            {
+                data: 'homePageUrl',
+                render: function (data, type) {
+                    return '<font size=2><a href="'+data+'" target="_blank">'+data+'</a></font>';
+                }
+            },
+            {
+                data: 'databaseOn',
+                render: function (data, type, row, meta) {
+                    if(data<1){
+                        return '';
+                    }else{
+                        var databaseOn=row.databaseOn;
+                        var databaseViewOn=row.databaseViewOn;
+                        var databaseAddress=row.databaseAddress;
+
+                        var color='red';
+                        if(databaseOn>0){ color='darkgreen'; }
+
+                        var tm='<div style="border-radius:15px;border-size:2px;border-color:'+color+';">';
+                        if(databaseViewOn>0){
+                            if(row.databaseType=='H2'){
+                                tm=tm+'<a href="/h2-ui" target="_blank"><img src="images/h2.png" height="30"></a>';
+                            }else if(row.databaseType=='MYSQL'){
+                                tm=tm+'<img src="images/mysql.png" height="30">';
+                            }else if(row.databaseType=='MYSQL'){
+                                tm=tm+'<img src="images/postgre.png" height="30">';
+                            }
+                        }else{
+                            tm=tm+'<font size="1" color="darkred">No DB-Console</font>';
+                        }
+                        tm=tm+'</div>';
+
+                        return tm;
+                    }
+                }
+             },
+            {
+                data: 'swaggerApiOn',
+                render: function (data, type, row, meta) {
+                    if(data=='1'){
+                        if(row.status=='UP'){
+                            return '<a href="'+row.homePageUrl+'swagger-ui/index.html" target="_blank"><img src="/images/swagger.png" height=30></a>';
+                        }else{
+                            return '<table><tr><td><img src="/images/swagger_black.png" height=30></td><td><font size=1>'+row.status+'</font></td></tr></table>';
+                        }
+                    }else{
+                        return '';
+                    }
+                }
+            },
+        ],
+        order: [[1, 'asc']],
+    });
+    setTimeout(function(){ dt.ajax.reload(); },1500);
+
+
+
+    $('#example tbody').on('click', 'tr td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = dt.row(tr);
+        var idx = detailRows.indexOf(tr.attr('id'));
+
+        if (row.child.isShown()) {
+            tr.removeClass('details');
+            row.child.hide();
+
+            // Remove from the 'open' array
+            detailRows.splice(idx, 1);
+            rows.splice(idx, 1);
+        } else {
+            tr.addClass('details');
+            row.child(format(row.data())).show();
+
+            // Add to the 'open' array
+            if (idx === -1) {
+                detailRows.push(tr.attr('id'));
+                rows.push(row);
+            }
+
+            addInfo(row.data().vipAddress, row.data().homePageUrl );
+        }
+    });
+
+    // On each draw, loop over the `detailRows` array and show any child rows
+    dt.on('draw', function () {
+        detailRows.forEach(function(id, i) {
+            $('#' + id + ' td.details-control').trigger('click');
+        });
+    });
+
+    // highliting rows and columns
+    $('#example tbody').on('mouseenter', 'td', function () {
+        var colIdx = dt.cell(this).index().column;
+
+        $(dt.cells().nodes()).removeClass('highlight');
+        $(dt.column(colIdx).nodes()).addClass('highlight');
+    });
+
+});
+</script>
+
+<div id="dialog-funkcje" title="Obsługa funkcji" style="background:black;">
+    <pre><code><div id="showresults" style="font-size:10px;"></div></code></pre>
+</div>
+
+</body>
+</html>

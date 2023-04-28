@@ -1,0 +1,21 @@
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info
+info:
+  application:
+    name: ${spring.application.name}
+    description: Serwis zdalnej konfiguracji chmury
+    version: '@project.version@'
+    spring-cloud-version: '@spring-cloud.version@'
+    spring-boot-version: '@spring-boot.version@'
+
+
+
+
+
+

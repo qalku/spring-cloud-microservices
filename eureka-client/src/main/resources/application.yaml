@@ -1,0 +1,9 @@
+info:
+  application:
+    name: ${spring.application.name}
+    description: Klient Discovery Server EUREKA
+    version: '@project.version@'
+    spring-cloud-version: '@spring-cloud.version@'
+    spring-boot-version: '@spring-boot.version@'
+  author: Marcin Wrona <marcin.seiho@gmail.com>
+

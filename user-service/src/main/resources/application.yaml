@@ -1,0 +1,17 @@
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info
+info:
+  application:
+    name: ${spring.application.name}
+    description: Serwis zarządzania użytkownikami
+    version: '@project.version@'
+    spring-cloud-version: '@spring-cloud.version@'
+    spring-boot-version: '@spring-boot.version@'
+  author: Marcin Wrona <marcin.seiho@gmail.com>
+

@@ -1,0 +1,121 @@
+/* wrapper dla inputa kalendarza */
+.input-calendar-cnt {
+    position: relative;
+    display: inline-block;
+}
+
+/* input kalendarza */
+.input-calendar {
+    //ikonka wzięta ze strony https://boxicons.com/
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAnklEQVRIS2NkoDFgpLH5DMRY8B/qCHS1uMRR3Ex3CxwYGBjmMzAwKJAZdA8YGBgSGRgYDsD0o/sApECeTMNh2kBmKOKyABauFNqBiFuyIg6P7RgRP+AWEBtkMIeS7IOhbwGpqYnkIBq1AKM0JaqEHFIZbehF8gcGBgZ+Up2Npv4hcn2CXtiBKpwFFNQJIMMT8FU4FDoeUzsxdTJFlgIAdwEsGTsi/XsAAAAASUVORK5CYII=");
+    background-position: calc(100% - 10px) center;
+    background-repeat: no-repeat;
+    border:1px solid #ddd;
+    cursor: pointer;
+}
+
+/* kalendarz */
+.calendar {
+    position: relative;
+    top:100%;
+    left:4px;
+    width: 340px;
+    background: #fff;
+    min-height: 290px;
+    padding: 5px;
+    border: 0px solid #ddd;
+    /*box-shadow:2px 2px 1px rgba(0,0,0,0.1);*/
+    font-family: sans-serif;
+    display: block;
+    z-index: 100;
+    opacity: 0;
+    transition: 0.4s opacity;
+    pointer-events: none;
+}
+.calendar.calendar-show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* przyciski prev-next */
+.calendar-prev-next {
+    height:30px;
+    display: flex;
+    justify-content: space-between;
+}
+.calendar .input-prev,
+.calendar .input-next {
+    position: relative;
+    z-index: 1;
+    cursor:pointer;
+    width: 30px;
+    font-family: sans-serif;
+    background-color: transparent;
+    border:0;
+    color: #333;
+}
+.calendar .input-prev:hover,
+.calendar .input-next:hover {
+    background:#D1EBFD;
+}
+
+/* nazwa miesiąca i roku */
+.calendar .date-name {
+    font-size:12px;
+    color: #666;
+    padding: 0 40px;
+    text-align: center;
+    line-height: 30px;
+    position: absolute;
+    left:0;
+    top:0;
+    width:100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* nagłówek kalendarza */
+.calendar .calendar-header {
+    height:30px;
+    position: relative;
+}
+
+/* tabela kalendarza */
+.calendar .calendar-table-cnt {
+    position: relative;
+    padding-top:10px;
+}
+.calendar .calendar-table {
+    font-size:12px;
+    color: #666;
+    width: 100%;
+}
+.calendar .calendar-table td {
+    text-align: center;
+    width:14.2857%;
+}
+.calendar .calendar-table th {
+    font-family: sans-serif;
+    font-weight: normal;
+    padding-bottom: 10px;
+    font-size:11px;
+    color:#aaa;
+}
+.calendar .calendar-table td.day {
+    background: #fafafa;
+    height:40px;
+    font-size:11px;
+    font-family: sans-serif;
+    font-weight:bold;
+}
+.calendar .calendar-table td.day:hover {
+    background: #D1EBFD;
+    cursor: pointer
+}
+.calendar .calendar-table td.current-day {
+    background-color: #F15C5C;
+    color:#fff;
+}
+.calendar .calendar-table td.current-day:hover {
+    background-color: #DE5858;
+}
